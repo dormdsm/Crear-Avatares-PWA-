@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crear Avatares · PWA</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0ea5e9"/>
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>Crear Avatares · Tablero</h1>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="avatares">Avatares</button>
+      <button class="tab-btn" data-tab="variaciones">Variaciones</button>
+      <button class="tab-btn" data-tab="escenarios">Escenarios</button>
+      <button class="tab-btn" data-tab="contador">Contador</button>
+      <button class="tab-btn" data-tab="config">Config</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="avatares" class="tab active">
+      <div class="card">
+        <h2>Nuevo avatar</h2>
+        <form id="form-avatar" class="grid">
+          <label>Nombre
+            <input required name="nombre" placeholder="Luci, Merce, David, Teo" />
+          </label>
+          <label>Descripción base
+            <input name="descripcion" placeholder="Camarera, delantal negro, etc." />
+          </label>
+          <label>URL imagen (Google Drive o enlace directo)
+            <input name="url" placeholder="Pega enlace compartido o directo (uc?id=...)" />
+          </label>
+          <div class="row">
+            <button type="submit">Guardar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="row between">
+          <h2>Listado de avatares</h2>
+          <div class="row gap">
+            <button id="exportar" class="outline">Exportar JSON</button>
+            <label class="import">
+              Importar JSON
+              <input type="file" id="importar" accept="application/json" hidden />
+            </label>
+          </div>
+        </div>
+        <div id="lista-avatares" class="grid cards-grid"></div>
+      </div>
+    </section>
+
+    <section id="variaciones" class="tab">
+      <div class="card">
+        <h2>Nueva variación</h2>
+        <form id="form-variacion" class="grid">
+          <label>Avatar
+            <select id="variacion-avatar" required></select>
+          </label>
+          <label>Nombre de variación
+            <input required name="nombre" placeholder="Procesional, Chef, Sentada, etc." />
+          </label>
+          <label>Descripción
+            <input name="descripcion" placeholder="Detalles de ropa, pose, fondo..." />
+          </label>
+          <label>Estado
+            <select name="estado">
+              <option>Pendiente</option>
+              <option>En curso</option>
+              <option>Completado</option>
+            </select>
+          </label>
+          <label>URL imagen (opcional)
+            <input name="url" placeholder="Enlace a la imagen (Drive uc?id=...)" />
+          </label>
+          <button type="submit">Guardar variación</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Listado de variaciones</h2>
+        <div id="lista-variaciones" class="grid cards-grid"></div>
+      </div>
+    </section>
+
+    <section id="escenarios" class="tab">
+      <div class="card">
+        <h2>Nuevo escenario</h2>
+        <form id="form-escenario" class="grid">
+          <label>Nombre
+            <input required name="nombre" placeholder="Calle El Riego - atardecer" />
+          </label>
+          <label>Dirección / referencia
+            <input name="direccion" placeholder="Zamora, referencia, etc." />
+          </label>
+          <label>Estado
+            <select name="estado">
+              <option>Pendiente</option>
+              <option>En curso</option>
+              <option>Completado</option>
+            </select>
+          </label>
+          <label>URL imagen (opcional)
+            <input name="url" placeholder="Enlace a la imagen (Drive uc?id=...)" />
+          </label>
+          <button type="submit">Guardar escenario</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Listado de escenarios</h2>
+        <div id="lista-escenarios" class="grid cards-grid"></div>
+      </div>
+    </section>
+
+    <section id="contador" class="tab">
+      <div class="card">
+        <h2>Registrar generación</h2>
+        <form id="form-contador" class="grid">
+          <label>Descripción
+            <input required name="descripcion" placeholder="Merce procesional, Luci base 3D..." />
+          </label>
+          <div class="row">
+            <label>Fecha
+              <input type="date" name="fecha" />
+            </label>
+            <label>Hora
+              <input type="time" name="hora" />
+            </label>
+          </div>
+          <button type="submit">Añadir al contador</button>
+        </form>
+      </div>
+      <div class="card">
+        <div class="row between">
+          <h2>Historial del día</h2>
+          <div class="row gap">
+            <button id="btn-reset-dia" class="danger outline">Reset día</button>
+          </div>
+        </div>
+        <table id="tabla-contador"></table>
+      </div>
+    </section>
+
+    <section id="config" class="tab">
+      <div class="card">
+        <h2>Google Drive</h2>
+        <p>Pega enlaces compartidos de Drive. Para enlace directo usa:
+          <code>https://drive.google.com/uc?id=FILE_ID</code>
+        </p>
+      </div>
+      <div class="card">
+        <h2>Backup</h2>
+        <div class="row gap">
+          <button id="backup-export" class="outline">Exportar TODO (JSON)</button>
+          <label class="import">
+            Importar TODO (JSON)
+            <input type="file" id="backup-import" accept="application/json" hidden />
+          </label>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <small>Crear Avatares · PWA — Offline-first con IndexedDB</small>
+  </footer>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+    }
+  </script>
+  <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
